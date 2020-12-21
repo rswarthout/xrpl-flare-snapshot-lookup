@@ -184,7 +184,7 @@ export default class Index extends React.Component {
             <div className="max-w-screen-xl mx-auto px-2 pb-6">
 
                 <div className="mt-2 md:mt-10 text-center space-x-5 md:space-x-20">
-                    <img className="inline-block mx-auto" src="/assets/img/flare-xrp-logo.png" />
+                    <img className="inline-block mx-auto w-auto h-40" src="/assets/img/flare-xrp-logo.png" />
                 </div>
 
                 <div className="mt-10 text-bold text-center text-gray-900 text-2xl">XRPL - Flare snapshot claim lookup</div>
