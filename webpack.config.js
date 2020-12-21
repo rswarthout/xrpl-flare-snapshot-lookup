@@ -54,7 +54,8 @@ module.exports = {
         new CleanWebpackPlugin(),
         new CopyWebpackPlugin({
             patterns: [
-                { from: 'src/favicon.ico', to: '' }
+                { from: 'src/favicon.ico', to: '' },
+                { from: 'src/assets/img', to: 'assets/img' }
             ]
         }),
         new MiniCssExtractPlugin({

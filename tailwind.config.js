@@ -6,7 +6,6 @@ module.exports = {
     theme: {
         fontFamily: {
             sans: [
-                'Inter var',
                 'system-ui',
                 '-apple-system',
                 'BlinkMacSystemFont',
@@ -25,7 +24,12 @@ module.exports = {
             mono: ['Menlo', 'Monaco', 'Consolas', '"Liberation Mono"', '"Courier New"', 'monospace'],
         },
     },
-  plugins: [
+    variants: {
+        extend: {
+            opacity: ['disabled'],
+        }
+    },
+    plugins: [
         require('@tailwindcss/typography'),
         require('@tailwindcss/aspect-ratio'),
         require('autoprefixer'),

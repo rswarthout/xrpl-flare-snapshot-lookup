@@ -1,6 +1,7 @@
 import React from 'react';
 import axios from "axios";
 var moment = require('moment');
+var rippleRegex = require('ripple-regex');
 
 export default class Index extends React.Component {
 
@@ -9,6 +10,7 @@ export default class Index extends React.Component {
         this.state = {
             lookingUpAddress: false,
             loadingFailed: false,
+            isAddressValid: false,
             xrplAddress: ""
         };
 
@@ -17,15 +19,33 @@ export default class Index extends React.Component {
         this.handleSubmit = this.handleSubmit.bind(this);
     }
 
+    checkforValidAddressFormat(string) {
+        return rippleRegex({exact: true}).test(string);
+    }
+
     handleAddressChange(event) {
+        let value = event.target.value;
+
         this.setState({
-            xrplAddress: event.target.value
+            isAddressValid: this.checkforValidAddressFormat(value)
+        });
+
+        this.setState({
+            xrplAddress: value
         });
     }
 
     handleSubmit(event) {
 
         event.preventDefault();
+
+        this.setState({
+            isAddressValid: this.checkforValidAddressFormat(this.state.xrplAddress)
+        });
+
+        if (this.state.isAddressValid === false) {
+            return;
+        }
 
         if (this.state.lookingUpAddress) {
             return;
@@ -155,7 +175,7 @@ export default class Index extends React.Component {
                             </dl>
                         </div>
                     </div>
-                    <div className="mt-2 text-gray-400 text-sm text-center">The data shown above is provided by the <a href="https://towo.io/" className="underline">Towo Labs API</a>.</div>
+                    <div className="mt-2 text-gray-400 text-sm text-center">The data shown above is provided by <a href="https://towo.io/" className="underline">Towo Labs snapshot API</a>.</div>
                 </div>
             );
         }
@@ -163,26 +183,12 @@ export default class Index extends React.Component {
         return (
             <div className="max-w-screen-xl mx-auto px-2 pb-6">
 
-                <div className="mt-10 md:mt-16 text-center space-x-5 md:space-x-20">
-                    <svg className="w-auto h-20 md:h-40 inline-block" viewBox="0 0 512 424">
-                        <path d="M437,0h74L357,152.48c-55.77,55.19-146.19,55.19-202,0L.94,0H75L192,115.83a91.11,91.11,0,0,0,127.91,0Z" />
-                        <path d="M74.05,424H0L155,270.58c55.77-55.19,146.19-55.19,202,0L512,424H438L320,307.23a91.11,91.11,0,0,0-127.91,0Z" />
-                    </svg>
-                    <div className="w-auto h-20 md:h-40 inline-block text-gray-900 text-5xl">+</div>
-                    <svg className="w-auto h-20 md:h-40 inline-block" viewBox="0 0 109.6 55.3" >
-                        <path fill="#353A69" d="M12.5 49c0 3.5-2.8 6.3-6.3 6.3C2.8 55.3 0 52.5 0 49s2.8-6.3 6.3-6.3c3.4.1 6.2 2.9 6.2 6.3z" />
-                        <path fill="#353A69" d="M0 33.3c0-.4 0-.8.1-1.1.1-1.2.4-2.3.9-3.4.9-1.9 2.3-3.4 4.1-4.4 1.6-.9 3.3-1.5 5.1-1.7 1-.1 2.1-.2 3.1-.2H37v.7c-.1 1.3-.4 2.6-.9 3.9-.9 1.9-2.4 3.5-4.4 4.5-1.5.8-3.2 1.3-4.9 1.6-1 .2-2.1.2-3.2.2H0z" />
-                        <path fill="#353A69" d="M56.6 0c0 .6 0 1.3-.1 1.9-.3 1.9-1.2 3.7-2.5 5.1-1.2 1.2-2.6 2.1-4.1 2.7-1.8.7-3.6 1-5.5 1.1H.8v-.2c0-1.5.3-2.9.9-4.2.9-2 2.3-3.5 4.2-4.5C7.4 1 9.2.5 10.9.2 12 .1 13.1 0 14.1 0h42.5z" />
-                        <path fill="#353A69" d="M80.8 54.6H78.4c0-.9 0-1.7-.1-2.6-.1.1-.2.2-.2.3-1.1 1.5-2.8 2.5-4.6 2.7-1.5.2-3-.1-4.3-.8-1.9-.9-3.2-2.6-3.7-4.6-.6-1.9-.4-4 .3-5.9.6-1.5 1.7-2.7 3.1-3.4 1.8-1 4-1.2 6-.6 1.4.4 2.6 1.2 3.4 2.4 0 0 .1.1.1.2v-.7c0-.4.1-.8.4-1.1.3-.5.8-.8 1.4-.8h.7l-.1 14.9zM73 52.7c.2 0 .6 0 .9-.1 1.3-.2 2.5-.9 3.3-2 1.1-1.5 1.4-3.5.8-5.3-.5-1.8-2-3.1-3.8-3.5-.8-.2-1.6-.2-2.4 0-1.9.3-3.5 1.6-4.1 3.5-.3.8-.4 1.6-.3 2.5.1.9.3 1.7.8 2.5 1.1 1.6 2.9 2.5 4.8 2.4z" />
-                        <path fill="#353A69" d="M96.7 48.1c0 .3.1.5.1.7.4 1.8 1.8 3.2 3.7 3.6 2 .5 4.1.1 5.8-1 .4-.3 1-.3 1.4 0 .2.1.3.3.5.4s.3.3.5.4l-.3.3c-.9.9-2.1 1.6-3.4 2-1.7.5-3.6.6-5.4.1-2.1-.5-3.8-2-4.7-3.9-1-2.2-1-4.7 0-6.9.7-1.5 1.8-2.7 3.2-3.5 1.9-1 4-1.3 6.1-.8 1.1.2 2.2.7 3 1.5 1.1.9 1.8 2.2 2.1 3.5.3 1.1.3 2.3.2 3.4v.1l-12.8.1zm10.5-2.1c0-.2 0-.4-.1-.6-.2-1.6-1.3-3-2.8-3.5-1-.4-2-.5-3.1-.3-2.1.2-3.9 1.8-4.3 3.8 0 .2-.1.4-.1.6h10.4z" />
-                        <path fill="#353A69" d="M45.4 54.6h-2.6v-.3-19.2c0-.9.7-1.7 1.7-1.8h12.8v.7c-.2.9-1 1.6-2 1.7h-9.6v7.4h10.8c.1.3.1.5 0 .8-.2.9-.9 1.5-1.8 1.6h-8.9v4.4l-.4 4.7z" />
-                        <path fill="#353A69" d="M86.5 41.7c.1-.1.2-.2.2-.4.6-.9 1.5-1.5 2.6-1.8 1.7-.5 3.6-.2 5 .8.1.1.2.1.3.2l.1.1-1.3 1.9c-.4-.2-.7-.4-1-.5-2.2-.9-4.8.1-5.7 2.4-.2.6-.3 1.1-.3 1.7v8.4c-.8.1-1.6.1-2.5 0v-.2-12.8c0-1 .7-1.8 1.7-1.9h.6l.3 2.1z" />
-                        <path fill="#353A69" d="M62.5 33.4v21.3h-2.4v-.4V44v-8.2c0-.7.3-1.3.7-1.8.5-.5 1.1-.7 1.7-.6z" />
-                    </svg>
+                <div className="mt-2 md:mt-10 text-center space-x-5 md:space-x-20">
+                    <img className="inline-block mx-auto" src="/assets/img/flare-xrp-logo.png" />
                 </div>
 
-                <div className="mt-12 text-bold text-center text-gray-900 text-2xl">XRPL - Flare snapshot claim lookup</div>
-                <div className="mt-1 text-center text-gray-600">Details of the XRPL snapshot and corresponding calculation of the Spark claim ratio (1.0073) <a href="https://blog.flare.xyz/the-xrp-flr-ratio/" className="underline">can be found here</a>.</div>
+                <div className="mt-10 text-bold text-center text-gray-900 text-2xl">XRPL - Flare snapshot claim lookup</div>
+                <div className="mt-1 text-center text-gray-600">Details of the XRPL snapshot and corresponding calculation of the Spark claim ratio (1.0073) <a href="https://blog.flare.xyz/the-xrp-flr-ratio/" className="underline" target="_blank">can be found here</a>.</div>
 
                 <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
                     <div className="bg-white py-8 px-4 shadow rounded-lg sm:px-10">
@@ -197,7 +203,7 @@ export default class Index extends React.Component {
                             </div>
 
                             <div>
-                                <button type="submit" className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                                <button type="submit" disabled={!this.state.isAddressValid} className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50">
                                     Lookup Address
                                 </button>
                             </div>
